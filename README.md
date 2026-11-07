@@ -4,11 +4,12 @@ Putar video sebagai **ASCII art berwarna** langsung di terminal. Ditulis dengan 
 cepat (video 1080p tetap mulus di atas 30 FPS), dan bisa juga memakai **webcam** secara real-time.
 
 <p align="center">
-  <img src="assets/screenshots/demo.gif" alt="Demo: video fraktal Mandelbrot diputar sebagai ASCII berwarna di Windows Terminal, 30 FPS" width="900">
+  <img src="assets/screenshots/demo.gif" alt="Demo: video fraktal Mandelbrot diputar sebagai ASCII berwarna resolusi tinggi di Windows Terminal" width="900">
 </p>
 
-<p align="center"><sub>Rekaman layar asli di Windows Terminal: video fraktal Mandelbrot diputar sebagai ASCII
-berwarna, stats bar menunjukkan <b>30/30 FPS</b>.</sub></p>
+<p align="center"><sub>Rekaman layar asli di Windows Terminal. Font terminal diperkecil (<code>Ctrl</code> + <code>-</code>)
+supaya muat ±340 kolom karakter, dan video tetap berjalan ~30 FPS. Lihat <a href="#screenshot">close-up</a> di bawah:
+setiap titik adalah karakter ASCII berwarna.</sub></p>
 
 ---
 
@@ -26,17 +27,24 @@ berwarna, stats bar menunjukkan <b>30/30 FPS</b>.</sub></p>
 
 ## Screenshot
 
-| Layar startup | Sedang diputar (set karakter Standar) |
+| Sedang diputar: set karakter Standar (±340 kolom) | Set karakter Ultra, 70 tingkat (±340 kolom) |
 |---|---|
-| ![Layar startup dengan pilihan sumber, resolusi, set karakter, dan warna](assets/screenshots/startup.png) | ![Video Mandelbrot diputar sebagai ASCII berwarna dengan set karakter Standar](assets/screenshots/playing.png) |
-| **Set karakter Ultra (70 tingkat)** | **Menu (video dijeda)** |
-| ![Video yang sama dengan set karakter Ultra yang lebih detail](assets/screenshots/ultra.png) | ![Menu sidebar terbuka di kiri, video dijeda di belakangnya](assets/screenshots/menu.png) |
+| ![Video Mandelbrot diputar sebagai ASCII berwarna resolusi tinggi dengan set karakter Standar](assets/screenshots/playing.png) | ![Video yang sama dengan set karakter Ultra yang lebih bertekstur](assets/screenshots/ultra.png) |
+| **Layar startup** | **Menu (video dijeda)** |
+| ![Layar startup dengan pilihan sumber, resolusi, set karakter, dan warna](assets/screenshots/startup.png) | ![Menu sidebar terbuka di kiri, video dijeda di belakangnya](assets/screenshots/menu.png) |
 
-<sub>Semua gambar adalah screenshot asli dari Windows Terminal (Windows 11, AMD Radeon 610M, 170×44 sel).
-Video sampel Mandelbrot dibuat dengan ffmpeg, jadi kamu bisa mencobanya sendiri:</sub>
+**Close-up**: potongan screenshot resolusi tinggi di atas, diperbesar tanpa dihaluskan. Setiap "piksel" sebenarnya
+adalah satu karakter ASCII dengan warnanya sendiri.
+
+![Close-up: karakter &, +, =, dan # berwarna yang membentuk gambar](assets/screenshots/closeup.png)
+
+<sub>Semua gambar adalah screenshot asli dari Windows Terminal (Windows 11, laptop 1920×1080, AMD Radeon 610M).
+Screenshot video diambil dengan font diperkecil 7× lewat <code>Ctrl</code> + <code>-</code> (±340×88 sel); layar
+startup dan menu memakai font normal (170×44 sel). Video sampel Mandelbrot dibuat dengan ffmpeg, jadi kamu bisa
+mencobanya sendiri:</sub>
 
 ```bash
-ffmpeg -f lavfi -i "mandelbrot=size=1280x720:rate=30:maxiter=2048:outer=normalized_iteration_count" -t 12 -pix_fmt yuv420p mandelbrot.mp4
+ffmpeg -f lavfi -i "mandelbrot=size=1280x720:rate=30:maxiter=2048:outer=normalized_iteration_count:start_scale=2.5:end_scale=0.9:end_pts=600" -t 20 -pix_fmt yuv420p mandelbrot.mp4
 cargo run --release -- mandelbrot.mp4 --play
 ```
 
@@ -227,9 +235,12 @@ cargo run --release -- --stdout --frames 1 --cols 80
 ## Tips Supaya Hasilnya Bagus
 
 - **Jadikan terminal fullscreen** (`F11` di Windows Terminal) supaya gambarnya lebih besar.
-- **Ingin lebih detail? Kecilkan font terminal** (`Ctrl` + `-`). Satu karakter = satu sel terminal,
-  jadi jumlah kolom ditentukan oleh ukuran font, bukan oleh program. Resolusi 600–800 kolom
-  baru terasa bila font sudah sangat kecil.
+- **Ingin lebih detail? Kecilkan font terminal** (`Ctrl` + `-`, kembalikan dengan `Ctrl` + `0`).
+  Satu karakter = satu sel terminal, jadi jumlah kolom ditentukan oleh ukuran font, bukan oleh program.
+  Dengan resolusi **Auto**, gambar langsung menyesuaikan saat font diubah.
+- **Patokan dari hasil uji** (laptop 1920×1080, Windows Terminal, font default): menekan `Ctrl` + `-`
+  7 kali memberi ±340 kolom dan tetap ~30 FPS. Di 8 kali, FPS turun ke ~17; di 9 kali, terminal
+  tidak sanggup menggambar ulang dan gambar mulai robek. Batasnya ada di kecepatan terminal, bukan engine.
 - **Coba set karakter lain** dari menu. Ultra punya gradasi paling halus (70 tingkat).
 - **Patah-patah di resolusi tinggi?** Biasanya yang jadi batas adalah kecepatan terminal, bukan
   engine. Turunkan resolusi atau perbesar sedikit font.
