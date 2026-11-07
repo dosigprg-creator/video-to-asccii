@@ -1,0 +1,10 @@
+/target
+
+# Scratch / output sementara
+*.output
+info.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
