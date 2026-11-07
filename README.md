@@ -3,21 +3,12 @@
 Putar video sebagai **ASCII art berwarna** langsung di terminal. Ditulis dengan **Rust**,
 cepat (video 1080p tetap mulus di atas 30 FPS), dan bisa juga memakai **webcam** secara real-time.
 
-```text
-        :::::=&&========........%%%%%%%%++++++++:-+&&&&&@@@@@@@@
-        :::-&&&&========........%%%%%%%%++++++++:::-&&&&@@@@@@@@
-        ::=&&&&&========........%%%%%%%%++++++++::::-+&&@@@@@@@@
-        =&&&&&&&========........%%%%%%%%++++++++:::::::+@@@@@@@@
-       =&&&&&&&&========........%%%%%%%%++++++++:::-++++=&@@@@@@
-       #&&&&&&&&========........%%%%%%%%++++++++:::%    #-@@@@@@
-       @&&&&&&&&========........%%%%%%%%++++++++:::&    &-@@@@@@
-       #&&&&&&&&========........%%%%%%%%++++++++:::%    #-@@@@@@
-..:::--=&####&&&+=++++++-----::.++++++++========--:---=+%%%@@@%%
---=+&&#%%%%###&&+++&&&&&&&&+==-::....:::-------------=++&##%%%##
-```
+<p align="center">
+  <img src="assets/screenshots/demo.gif" alt="Demo: video fraktal Mandelbrot diputar sebagai ASCII berwarna di Windows Terminal, 30 FPS" width="900">
+</p>
 
-<sub>Contoh output mode <code>--stdout</code> dari video uji bawaan (tanpa warna). Saat diputar
-di terminal, hasilnya berwarna penuh 24-bit dan memenuhi layar.</sub>
+<p align="center"><sub>Rekaman layar asli di Windows Terminal: video fraktal Mandelbrot diputar sebagai ASCII
+berwarna, stats bar menunjukkan <b>30/30 FPS</b>.</sub></p>
 
 ---
 
@@ -30,6 +21,24 @@ di terminal, hasilnya berwarna penuh 24-bit dan memenuhi layar.</sub>
 - **Video otomatis diulang** (loop) tanpa patah.
 - **4 set karakter**: Standar, Blok, Detil, dan Ultra (70 tingkat kecerahan).
 - **Engine GPU opsional** (`--gpu`), dengan fallback otomatis ke CPU.
+
+---
+
+## Screenshot
+
+| Layar startup | Sedang diputar (set karakter Standar) |
+|---|---|
+| ![Layar startup dengan pilihan sumber, resolusi, set karakter, dan warna](assets/screenshots/startup.png) | ![Video Mandelbrot diputar sebagai ASCII berwarna dengan set karakter Standar](assets/screenshots/playing.png) |
+| **Set karakter Ultra (70 tingkat)** | **Menu (video dijeda)** |
+| ![Video yang sama dengan set karakter Ultra yang lebih detail](assets/screenshots/ultra.png) | ![Menu sidebar terbuka di kiri, video dijeda di belakangnya](assets/screenshots/menu.png) |
+
+<sub>Semua gambar adalah screenshot asli dari Windows Terminal (Windows 11, AMD Radeon 610M, 170×44 sel).
+Video sampel Mandelbrot dibuat dengan ffmpeg, jadi kamu bisa mencobanya sendiri:</sub>
+
+```bash
+ffmpeg -f lavfi -i "mandelbrot=size=1280x720:rate=30:maxiter=2048:outer=normalized_iteration_count" -t 12 -pix_fmt yuv420p mandelbrot.mp4
+cargo run --release -- mandelbrot.mp4 --play
+```
 
 ---
 
@@ -234,7 +243,8 @@ cargo run --release -- --stdout --frames 1 --cols 80
 | `gagal spawn ffmpeg (pastikan ffmpeg ada di PATH)` | ffmpeg belum terpasang atau belum masuk `PATH`. Install ffmpeg, buka ulang terminal, lalu cek `ffmpeg -version`. |
 | `Gagal buka sumber: ...` di layar startup | Periksa path video. Path relatif dihitung dari folder tempat perintah dijalankan; path dengan spasi wajib pakai tanda kutip. |
 | Webcam tidak terdeteksi atau layar diam | Jalankan `--list-cams`, tutup aplikasi lain yang sedang memakai kamera, lalu pakai nama kamera persis dari daftar. |
-| Warna tampak aneh atau tidak berwarna | Pakai terminal yang mendukung truecolor, misalnya Windows Terminal. |
+| Semua tampil hitam-putih (termasuk stats bar) | Variabel lingkungan `NO_COLOR` sedang aktif, dan library terminal yang dipakai mematuhinya. Cek dengan `echo $env:NO_COLOR` (PowerShell); matikan untuk sesi itu dengan `Remove-Item Env:NO_COLOR`. |
+| Warna tampak aneh | Pakai terminal yang mendukung truecolor, misalnya Windows Terminal. |
 | Gambar patah-patah | Pastikan memakai `--release`, lalu turunkan resolusi lewat menu. |
 
 ---
@@ -305,6 +315,7 @@ src/
 benches/engine_bench.rs     # benchmark criterion
 tests/                      # integration test (TestBackend)
 assets/test_1080p.mp4       # video uji (ffmpeg testsrc, 5 detik)
+assets/screenshots/         # screenshot & GIF untuk README
 ```
 
 Video uji dibuat dengan:
